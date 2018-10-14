@@ -72,10 +72,21 @@
 		<maven-resources-plugin.version>2.5</maven-resources-plugin.version>
 		<maven-processor-plugin.version>2.0.5</maven-processor-plugin.version>
 		<maven-build-helper-plugin.version>1.7</maven-build-helper-plugin.version>
+		
+		<!-- spring 版本号 -->		
+		<springframework.version>4.3.10.RELEASE</springframework.version>
+		<spring-boot.version>2.0.5.RELEASE</spring-boot.version>
+		
+		<!-- 日志文件 版本号-->
+		
+		<!-- 数据库  版本号 -->
 	</properties>
-
+	
+	<!-- ====================================================================== 
+		模块（有时称作子项目） 被构建成项目的一部分。列出的每个模块元素是指向该模块的目录的相对路径 -->
 	<modules>
 		<module>dllwh-arithmetic</module>
+		<module>dllwh-common</module>
 	</modules>
 	<!-- ====================================================================== 
 		构建项目需要的信息 -->
