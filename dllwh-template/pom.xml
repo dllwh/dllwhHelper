@@ -11,4 +11,20 @@
 	<artifactId>dllwh-template</artifactId>
 	<name>dllwh-template</name>
 	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<!-- mybatis 代码自动生成器 -->
+		<dependency>
+			<groupId>org.mybatis.generator</groupId>
+			<artifactId>mybatis-generator-core</artifactId>
+			<version>1.3.5</version>
+		</dependency>
+		<!-- 导入Mysql数据库驱动包 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
 </project>
