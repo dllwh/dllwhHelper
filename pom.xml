@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!--声明项目描述符遵循哪一个POM模型版本。模型本身的版本很少改变，虽然如此，但它仍然是必不可少的，这是为了当Maven引入了新的特性或者其他模型变更的时候，确保稳定性。 -->
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<!-- ====================================================================== 
+		基本设置 -->
+	<!--项目的全球唯一标识符，通常使用全限定的包名区分该项目和其他项目。并且构建时生成的路径也是由此生成， 如com.mycompany.app生成的相对路径为：/com/mycompany/app -->
+	<groupId>org.dllwh</groupId>
+	<!--构件的标识符，它和group ID一起唯一标识一个构件.在某个特定的group ID下,artifact ID也必须是唯一的。构件是项目产生的或使用的一个东西，Maven为项目产生的构件包括：JARs，源码，二进制发布和WARs等。 -->
+	<artifactId>dllwhHelper</artifactId>
+	<!--项目当前版本,格式为:主版本.次版本.增量版本-限定版本号 -->
+	<version>0.0.1-SNAPSHO</version>
+	<!--项目产生的构件类型,例如jar、war、ear、pom.插件可以创建他们自己的构件类型,所以前面列的不是全部构件类型 -->
+	<packaging>pom</packaging>
+
+	<!-- ====================================================================== 
+		项目信息设置 -->
+	<!--项目的名称, Maven产生的文档用 -->
+	<name>dllwhHelper</name>
+	<!--项目主页的URL, Maven产生的文档用 -->
+	<url>http://maven.apache.org</url>
+	<!--项目的详细描述, Maven 产生的文档用 -->
+	<description>Java 研发帮助类集合</description>
+	<inceptionYear>2018</inceptionYear>
+
+	<!-- ====================================================================== 
+		项目开发者列表 -->
+	<developers>
+		<!--某个项目开发者的信息 -->
+		<developer>
+			<!--SCM里项目开发者的唯一标识符 -->
+			<id>duleilewuhen</id>
+			<!--项目开发者的全名 -->
+			<name>独泪了无痕</name>
+			<!--项目开发者的email -->
+			<email>duleilewuhen@sina.com</email>
+			<!--项目开发者在项目中扮演的角色，角色元素描述了各种角色 -->
+			<roles>
+				<role>Project Manager</role>
+				<role>Architect</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>GXF5211314</id>
+			<name>皇族灬战狼</name>
+			<email>duleilewuhen@163.com</email>
+			<roles>
+				<role>java developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<!-- ====================================================================== 
+		指定属性 方便管理 -->
+	<properties>
+		<!-- 指定Maven用什么编码来读取源码及文档 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- 指定Maven用什么编码来呈现站点的HTML文件 -->
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- maven插件的版本 -->
+		<plugin.version>2.4</plugin.version>
+		<!-- JDK版本 -->
+		<java.version>1.8</java.version>
+	</properties>
+
+	<!-- ====================================================================== 
+		构建项目需要的信息 -->
+	<build>
+		<!-- 定义默认的目标或者阶段 -->
+		<defaultGoal>compile</defaultGoal>
+		<!-- 使用的插件列表 。 -->
+		<pluginManagement>
+			<!-- plugin元素包含描述插件所需要的信息。 -->
+			<plugins>
+				<!-- Java编译插件 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<!-- 资源文件拷贝插件 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources-plugin.version}</version>
+					<configuration>
+						<encoding>${file.encoding}</encoding>
+						<outputDirectory />
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<!-- 这个元素描述了项目相关的所有资源路径列表，例如和项目相关的属性文件，这些资源被包含在最终的打包文件里。 -->
+		<resources>
+			<!--打包进XML等文件，排除java及版本控制文件 -->
+			<resource>
+				<!-- 描述存放资源的目录，该路径相对POM路径 -->
+				<directory>src/main/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+					<exclude>**/.svn/*</exclude>
+				</excludes>
+			</resource>
+
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.*</include>
+					<include>**/*.*</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+</project>
