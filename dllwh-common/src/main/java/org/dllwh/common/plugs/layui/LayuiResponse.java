@@ -12,8 +12,7 @@ import java.util.List;
  * @创建者: 独泪了无痕--duleilewuhen@sina.com
  * @创建时间: 2018年10月14日 下午10:04:29
  * @版本: V1.0
- * @since: JDK 1.7
- * @see <a href="">TODO(连接内容简介)</a>
+ * @since: JDK 1.8
  */
 public class LayuiResponse {
 	/** 状态，表示请求成功 */

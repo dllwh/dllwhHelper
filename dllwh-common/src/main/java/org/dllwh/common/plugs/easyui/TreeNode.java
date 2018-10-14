@@ -3,6 +3,18 @@ package org.dllwh.common.plugs.easyui;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 
+ * 把今天最好的表现当作明天最新的起点．．～
+ *
+ * Today the best performance as tomorrow newest starter!
+ *
+ * @类描述: EasyU Tree（树）
+ * @创建者: 独泪了无痕--duleilewuhen@sina.com
+ * @创建时间: 2018年10月14日 下午10:08:52
+ * @版本: V1.0
+ * @since: JDK 1.8
+ */
 public class TreeNode implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** ----------------------------------------------------- Fields start */
