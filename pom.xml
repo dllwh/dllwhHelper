@@ -87,6 +87,14 @@
 	<modules>
 		<module>dllwh-arithmetic</module>
 		<module>dllwh-common</module>
+		<module>dllwh-utils</module>
+		<module>dllwh-weixin-base</module>
+		<module>dllwh-weixin-mp</module>
+		<module>dllwh-weixin-qy</module>
+		<module>dllwh-webCrawler</module>
+		<module>dllwh-websocket</module>
+		<module>dllwh-template</module>
+		<module>dllwh-server</module>
 	</modules>
 	<!-- ====================================================================== 
 		构建项目需要的信息 -->
