@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<!--声明项目描述符遵循哪一个POM模型版本。模型本身的版本很少改变，虽然如此，但它仍然是必不可少的，这是为了当Maven引入了新的特性或者其他模型变更的时候，确保稳定性。 -->
 	<modelVersion>4.0.0</modelVersion>
@@ -92,6 +91,7 @@
 		<module>dllwh-weixin-base</module>
 		<module>dllwh-weixin-mp</module>
 		<module>dllwh-weixin-qy</module>
+		<module>dllwh-weixin-pay</module>
 		<module>dllwh-webCrawler</module>
 		<module>dllwh-websocket</module>
 		<module>dllwh-template</module>

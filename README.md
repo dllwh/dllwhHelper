@@ -29,6 +29,10 @@
 
 		企业号API封装
 
+* **dllwh-weixin-pay**
+
+		微信支付
+
 * **dllwh-webCrawler**
 
 		网络爬虫、数据挖掘
