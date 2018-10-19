@@ -1,4 +1,4 @@
-package org.dllwh.common.property;
+package org.dllwh.common.constanst;
 
 import java.nio.charset.Charset;
 

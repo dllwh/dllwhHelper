@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Locale;
 
-import org.dllwh.common.property.ConstantHelper;
+import org.dllwh.common.constanst.ConstantHelper;
 
 /**
  * 
