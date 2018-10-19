@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<!--声明项目描述符遵循哪一个POM模型版本。模型本身的版本很少改变，虽然如此，但它仍然是必不可少的，这是为了当Maven引入了新的特性或者其他模型变更的时候，确保稳定性。 -->
 	<modelVersion>4.0.0</modelVersion>
@@ -64,24 +65,35 @@
 		<plugin.version>2.4</plugin.version>
 		<!-- JDK版本 -->
 		<java.version>1.8</java.version>
-		
+
 		<!-- maven -->
 		<maven-surefire-plugin.version>2.6</maven-surefire-plugin.version>
 		<maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
 		<maven-resources-plugin.version>2.5</maven-resources-plugin.version>
 		<maven-processor-plugin.version>2.0.5</maven-processor-plugin.version>
 		<maven-build-helper-plugin.version>1.7</maven-build-helper-plugin.version>
-		
-		<!-- spring 版本号 -->		
+
+		<!-- spring 版本号 -->
 		<springframework.version>4.3.10.RELEASE</springframework.version>
 		<spring-boot.version>2.0.5.RELEASE</spring-boot.version>
-		
-		<!-- 日志文件 版本号-->
-		
-		<!-- 数据库  版本号 -->
+
+		<!-- 日志文件 版本号 -->
+
+		<!-- 数据库 版本号 -->
 		<mysql.version>8.0.12</mysql.version>
 	</properties>
-	
+
+	<!-- ======== <dependency></dependency>===================================================== 
+		该元素描述了项目相关的所有依赖,这些依赖组成了项目构建过程中的一个个环节,它们自动从项目定义的仓库中下载 -->
+	<dependencies>
+		<!-- 导入Mysql数据库驱动包 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+	</dependencies>
+
 	<!-- ====================================================================== 
 		模块（有时称作子项目） 被构建成项目的一部分。列出的每个模块元素是指向该模块的目录的相对路径 -->
 	<modules>
@@ -96,7 +108,7 @@
 		<module>dllwh-weixin-base</module>
 		<module>dllwh-weixin-mp</module>
 		<module>dllwh-weixin-pay</module>
-		<module>dllwh-weixin-qy</module>		
+		<module>dllwh-weixin-qy</module>
 	</modules>
 	<!-- ====================================================================== 
 		构建项目需要的信息 -->
@@ -125,7 +137,7 @@
 					<version>${maven-resources-plugin.version}</version>
 					<configuration>
 						<encoding>${file.encoding}</encoding>
-						<outputDirectory/>
+						<outputDirectory />
 					</configuration>
 				</plugin>
 			</plugins>
