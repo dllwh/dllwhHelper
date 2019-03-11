@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
  * @创建者: 独泪了无痕--duleilewuhen@sina.com
  * @创建时间: 2018年11月11日 下午11:11:31
  * @版本: V1.0.1
- * @since: JDK 1.7
+ * @since: JDK 1.8
  */
 public class ListUtilHelper {
 	/**
