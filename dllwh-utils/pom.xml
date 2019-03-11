@@ -11,4 +11,13 @@
 	<artifactId>dllwh-utils</artifactId>
 	<name>dllwh-utils</name>
 	<url>http://maven.apache.org</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId><!-- j2ee web spec -->
+			<version>${servlet-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>
