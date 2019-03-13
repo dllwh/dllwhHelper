@@ -14,9 +14,9 @@ package org.dllwh.utils.web.sessoion.common;
  * @since: JDK 1.7
  */
 public final class GlobalConstant {
-	public final static String	JSESSIONID			= "dllwhSessionId";
-	public final static String	SESSIONHANDLER		= "sessionHandler";
-	public final static String	EXPIRETIME		= "expireTime";
-	/** cookie 的过期时间 */
-	public final static int		COOKIE_EXPIRE_TIME	= 60 * 60 * 24;
+	public final static String	JSESSIONID		= "dllwhSessionId";
+	public final static String	SESSIONHANDLER	= "sessionHandler";
+	public final static String	EXPIRE_NAME		= "expireTime";
+	/** 过期时间 */
+	public final static int		EXPIRE_TIME		= 60 * 60 * 24;
 }

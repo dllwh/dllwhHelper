@@ -1,7 +1,10 @@
 package org.dllwh.utils.web.sessoion.core;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +35,7 @@ public class DispacherSessionWrapper implements HttpSession {
 	private Map<String, Object>	sessionMap	= null;
 	private HttpServletRequest	request;
 	private HttpServletResponse	response;
+	private Integer				expireTime;
 
 	public DispacherSessionWrapper() {
 	}
@@ -46,12 +50,13 @@ public class DispacherSessionWrapper implements HttpSession {
 	}
 
 	public DispacherSessionWrapper(HttpServletRequest request, HttpServletResponse response, String sid,
-			SessionDAO sessionDAO) {
+			SessionDAO sessionDAO, Integer expireTime) {
 		this.request = request;
 		this.response = response;
 		this.sid = sid;
 		this.session = request.getSession();
 		this.sessionDAO = sessionDAO;
+		this.expireTime = expireTime;
 	}
 
 	@Override
@@ -62,13 +67,22 @@ public class DispacherSessionWrapper implements HttpSession {
 		try {
 			return sessionMap.get(name);
 		} catch (Exception e) {
-			throw new RuntimeException("session 异常  getAttribute() name:" + name, e);
+			log.error("session 异常  getAttribute() name:" + name, e);
+			return session.getAttribute(name);
 		}
 	}
 
 	@Override
 	public Enumeration getAttributeNames() {
-		return session.getAttributeNames();
+		if(sessionMap == null ){
+			sessionMap = sessionDAO.getSession(sid);
+		}
+		Set<Entry<String, Object>> sessinSet = sessionMap.entrySet();
+		if (sessinSet != null && sessinSet.size() > 0) {
+			return Collections.enumeration(sessinSet);
+		} else {
+			return session.getAttributeNames();
+		}
 	}
 
 	@Override
@@ -93,7 +107,7 @@ public class DispacherSessionWrapper implements HttpSession {
 	}
 
 	/**
-	 * 方法描述: 获取最大有效 非活动时间
+	 * 方法描述: 获取最大有效 非活动时间（秒），默认为30分钟
 	 */
 	@Override
 	public int getMaxInactiveInterval() {
@@ -132,9 +146,11 @@ public class DispacherSessionWrapper implements HttpSession {
 		if (sessionMap != null) {
 			sessionMap.clear();
 		}
-		sessionDAO.removeSession(sid);
-		// CookieHelper.setCookie(request, response, GlobalConstant.JSESSIONID,
-		// sid, -1);
+		try {
+			sessionDAO.removeSession(sid);
+		} catch (Exception e) {
+			session.invalidate();
+		}
 	}
 
 	/**
@@ -160,11 +176,16 @@ public class DispacherSessionWrapper implements HttpSession {
 		}
 		try {
 			sessionMap.remove(name);
-			sessionDAO.removeSession(sid);
-			// CookieHelper.setCookie(request, response,
-			// GlobalConstant.JSESSIONID, sid, -1);
+			session.removeAttribute(name);
+			if (sessionMap != null && sessionMap.size() > 0) {
+				sessionDAO.saveSession(sid, sessionMap, expireTime);
+			} else {
+				sessionDAO.removeSession(sid);
+			}
+
 		} catch (Exception e) {
-			throw new RuntimeException("session 异常  removeAttribute() name:" + name, e);
+			log.error("session 异常  removeAttribute() name:" + name, e);
+			session.removeAttribute(name);
 		}
 	}
 
@@ -183,15 +204,18 @@ public class DispacherSessionWrapper implements HttpSession {
 			sessionMap = sessionDAO.getSession(sid);
 		}
 		try {
-			sessionMap.put(name, value);
-			sessionDAO.saveSession(sid, sessionMap, getMaxInactiveInterval());
+			sessionDAO.saveSession(sid, sessionMap, expireTime);
 		} catch (Exception e) {
-			throw new RuntimeException("session 异常  setAttribute() name:" + name + ",value:" + value, e);
+			log.error("session 异常  setAttribute() name:" + name + ",value:" + value, e);
+		} finally {
+			session.setAttribute(name, value);
 		}
 	}
 
 	/**
 	 * 方法描述: 设置最大有效 非活动时间
+	 * 
+	 * interval为0或者负数，表示该session一直有效
 	 */
 	@Override
 	public void setMaxInactiveInterval(int interval) {

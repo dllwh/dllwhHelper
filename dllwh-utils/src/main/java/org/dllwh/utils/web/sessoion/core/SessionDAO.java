@@ -23,7 +23,7 @@ public interface SessionDAO {
 	/**
 	 * @方法描述 : 刷新session信息到存储仓库中
 	 */
-	public void saveSession(String sid, Map<String, Object> session, long expireTime);
+	public void saveSession(String sid, Map<String, Object> session, Integer expireTime);
 
 	/**
 	 * @方法描述 : 删除session

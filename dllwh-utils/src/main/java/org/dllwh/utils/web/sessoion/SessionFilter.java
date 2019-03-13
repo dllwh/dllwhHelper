@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SessionFilter implements Filter {
 	private SessionDAO			sessionDAO;
 	private static final String	regex	= ".*(css|ico|html|jpg|jpeg|png|gif|js)";
-	private Integer				cookieExpireTime;
+	private Integer				expireTime;
 
 	@Override
 	public void destroy() {
@@ -52,20 +52,26 @@ public class SessionFilter implements Filter {
 			return;
 		}
 		// 交给自定义的HttpServletRequestWrapper处理
-		httpRequest = new DefinedHttpServletRequestWrapper(httpRequest, httpResponse, sessionDAO,
-				cookieExpireTime);
+		httpRequest = new DefinedHttpServletRequestWrapper(httpRequest, httpResponse, sessionDAO, expireTime);
 		filterChain.doFilter(httpRequest, httpResponse);
 	}
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		String className = filterConfig.getInitParameter(GlobalConstant.SESSIONHANDLER);
-		cookieExpireTime = Integer.valueOf(filterConfig.getInitParameter(GlobalConstant.EXPIRETIME));
+		String expireName = filterConfig.getInitParameter(GlobalConstant.EXPIRE_NAME);
 
 		if (StringUtils.isEmpty(className)) {
 			log.error("获取初始化参数sessionHandler失败！");
 			return;
 		}
+
+		if (StringUtils.isNotEmpty(expireName) && StringUtils.isNumeric(expireName)) {
+			expireTime = Integer.valueOf(expireTime);
+		} else {
+			expireTime = GlobalConstant.EXPIRE_TIME;
+		}
+
 		try {
 			sessionDAO = (SessionDAO) (Class.forName(className).newInstance());
 		} catch (Exception e) {
