@@ -11,8 +11,16 @@
 	<artifactId>dllwh-utils</artifactId>
 	<name>dllwh-utils</name>
 	<url>http://maven.apache.org</url>
+	<version>${dllwh-utils.version}</version>
 
 	<dependencies>
+		<!-- 配置子项目的相关调用 -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dllwh-common</artifactId>
+			<version>${dllwh-common.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId><!-- j2ee web spec -->

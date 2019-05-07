@@ -11,4 +11,5 @@
 	<artifactId>dllwh-common</artifactId>
 	<name>dllwh-common</name>
 	<url>http://maven.apache.org</url>
+	<version>${dllwh-common.version}</version>
 </project>
