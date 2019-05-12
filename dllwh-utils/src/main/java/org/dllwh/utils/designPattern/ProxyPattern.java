@@ -29,11 +29,16 @@ public class ProxyPattern {
 		}
 
 		public void marry() {
-			System.out.println("我们是婚庆公司代理结婚");
+			System.out.println("代理操作：开启代理");
+			// 执行代理对象的方法
 			proxyInterface.marry();
+			System.out.println("代理操作：结束代理");
 		}
 	}
 
+	/**
+	 * @类描述: 目标对象
+	 */
 	class NormalHome implements StaticProxyInterface {
 		public void marry() {
 			System.out.println("我们结婚啦～");
@@ -45,6 +50,7 @@ public class ProxyPattern {
 	 */
 	public void StaticProxy() {
 		StaticProxyInterface proxyInterface = new WeddingCompany(new NormalHome());
+		// 执行代理方法
 		proxyInterface.marry();
 	}
 
