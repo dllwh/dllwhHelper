@@ -1,10 +1,9 @@
 package org.dllwh.utils.database.redis;
 
-import org.dllwh.utils.application.CheckHelper;
-import org.dllwh.utils.database.redis.command.RedisBasicCommand;
+import org.dllwh.utils.database.redis.command.KeyCommand;
+import org.dllwh.utils.database.redis.factory.RedisConfigurationManager;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.exceptions.JedisDataException;
 
 /**
  * 把今天最好的表现当作明天最新的起点．．～
@@ -17,49 +16,14 @@ import redis.clients.jedis.exceptions.JedisDataException;
  * @版本: V1.0.1
  * @since: JDK 1.8
  */
-public final class JedisPoolHelper extends RedisBasicCommand {
-
-	private String	host;
-	private int		port;
-	private String	auth;
+public final class JedisPoolHelper extends RedisConfigurationManager implements KeyCommand {
 
 	public JedisPoolHelper(String host, int port) {
-		this.host = host;
-		this.port = port;
+		super(host, port);
 	}
 
 	public JedisPoolHelper(String host, int port, String auth) {
-		this.host = host;
-		this.port = port;
-		this.auth = auth;
-	}
-
-	/**
-	 * @方法描述: 获取操作redis的客户端
-	 * 
-	 *        <pre>
-	 *        Jedis客户端实例不是线程安全的
-	 *        </pre>
-	 * 
-	 * @return
-	 * @throws JedisDataException
-	 */
-	private synchronized Jedis getRedisClient() throws JedisDataException {
-		Jedis jedis = new Jedis(host, port);
-		if (!CheckHelper.checkIsEmpty(auth)) {
-			jedis.auth(auth);
-		}
-		return jedis;
-	}
-
-	/**
-	 * @方法描述:关闭redis的客户端
-	 * @param jedisClient
-	 */
-	private void closeRedisClient(Jedis jedisClient) {
-		if (jedisClient != null) {
-			jedisClient.close();
-		}
+		super(host, port, auth);
 	}
 
 	@Override

@@ -1,14 +1,11 @@
 package org.dllwh.utils.database.redis;
 
 import java.util.List;
-import java.util.Set;
 
-import org.dllwh.utils.database.redis.command.RedisBasicCommand;
-import org.dllwh.utils.database.redis.factory.RedisConfigFactory;
+import org.dllwh.utils.database.redis.command.KeyCommand;
+import org.dllwh.utils.database.redis.factory.RedisConfigurationManager;
 
-import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * 把今天最好的表现当作明天最新的起点．．～
@@ -26,59 +23,19 @@ import redis.clients.jedis.JedisPoolConfig;
  * @版本: V1.0.1
  * @since: JDK 1.8
  */
-public final class JedisClusterHelper extends RedisBasicCommand {
-	private static JedisClusterHelper	redisClusterFactory;
-	private Set<HostAndPort>			clusterNodes;
-	/** 建立连接池配置参数 */
-	private JedisPoolConfig				poolConfig;
-	private RedisConfigFactory			factory;
+public final class JedisClusterHelper extends RedisConfigurationManager implements KeyCommand {
 
-	private JedisClusterHelper(List<String> hostAndPortList) {
-		factory = new RedisConfigFactory(hostAndPortList);
-		poolConfig = factory.genJedisConfig();
-		clusterNodes = factory.genClusterNode();
-	}
-
-	/**
-	 * @方法描述 : 静态工厂方法
-	 * @return
-	 */
-	public static JedisClusterHelper getInstance(List<String> hostAndPortList) {
-		if (redisClusterFactory == null) {
-			redisClusterFactory = new JedisClusterHelper(hostAndPortList);
-		}
-		return redisClusterFactory;
-	}
-
-	/**
-	 * @方法描述 : 获取操作redis的客户端
-	 * @return
-	 */
-	private synchronized JedisCluster getRedisClient() {
-		return new JedisCluster(clusterNodes, poolConfig);
-	}
-
-	/**
-	 * @方法描述 : 关闭redis的客户端
-	 * @return
-	 */
-	private void closeRedisClient(JedisCluster jedisClient) {
-		if (jedisClient != null) {
-			try {
-				jedisClient.close();
-			} catch (Exception quitExp) {
-				quitExp.printStackTrace();
-			}
-		}
+	public JedisClusterHelper(List<String> hostAndPortList) {
+		super(hostAndPortList);
 	}
 
 	@Override
 	public boolean exists(String key) throws Exception {
-		JedisCluster jedisClient = getRedisClient();
+		JedisCluster jedisClient = getRedisClusterClient();
 		try {
 			return jedisClient.exists(key);
 		} finally {
-			closeRedisClient(jedisClient);
+			closeRedisClusterClient(jedisClient);
 		}
 	}
 }
