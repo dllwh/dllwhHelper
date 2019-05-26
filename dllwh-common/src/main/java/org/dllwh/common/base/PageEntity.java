@@ -3,6 +3,11 @@
  */
 package org.dllwh.common.base;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 /**
  * 把今天最好的表现当作明天最新的起点．．～
  *
@@ -14,45 +19,21 @@ package org.dllwh.common.base;
  * @版本: V1.0
  * @since: JDK 1.8
  */
+@Data
+@ToString(callSuper = true)
+@NoArgsConstructor
+@EqualsAndHashCode
 public class PageEntity {
 	/** 当前页数:第几页 --pageNo */
-	protected Integer page = 1;
+	protected Integer	page	= 1;
 	/** 每页记录数 :pageSize */
-	protected Integer rows = 10;
+	protected Integer	rows	= 10;
 	/** 起始页 */
-	protected int startRow;
+	protected int		startRow;
 	/** 排序字段名 */
-	protected String sortName;
+	protected String	sortName;
 	/** 按什么排序(asc,desc) */
-	protected String sortOrder;
-
-	public Integer getPage() {
-		return page;
-	}
-
-	public void setPage(Integer page) {
-		this.page = page;
-	}
-
-	public Integer getRows() {
-		return rows;
-	}
-
-	public void setRows(Integer rows) {
-		this.rows = rows;
-	}
-
-	public String getSortName() {
-		return sortName;
-	}
-
-	public void setSortName(String sortName) {
-		this.sortName = sortName;
-	}
-
-	public String getSortOrder() {
-		return sortOrder;
-	}
+	protected String	sortOrder;
 
 	public void setSortOrder(String sortOrder) {
 		if (sortOrder.equalsIgnoreCase("asc") || sortOrder.equalsIgnoreCase("desc")) {

@@ -2,6 +2,12 @@ package org.dllwh.common.base;
 
 import java.sql.Timestamp;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 /**
  * 把今天最好的表现当作明天最新的起点．．～
  *
@@ -13,6 +19,11 @@ import java.sql.Timestamp;
  * @版本: V1.0.1
  * @since: JDK 1.8
  */
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class BaseEntity {
 	/** 实体编号（唯一标识） */
 	protected Long		id;
@@ -34,105 +45,4 @@ public abstract class BaseEntity {
 	protected String	modifyName;
 	/** 最后更新时间 */
 	protected Timestamp	lastModifiedTime;
-
-	public BaseEntity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public BaseEntity(Long id, Integer ifEnabled, Long creator, String creatorAccount, String creatorName,
-			Timestamp createTime, Long modifier, String modifyAccount, String modifyName,
-			Timestamp lastModifiedTime) {
-		super();
-		this.id = id;
-		this.ifEnabled = ifEnabled;
-		this.creator = creator;
-		this.creatorAccount = creatorAccount;
-		this.creatorName = creatorName;
-		this.createTime = createTime;
-		this.modifier = modifier;
-		this.modifyAccount = modifyAccount;
-		this.modifyName = modifyName;
-		this.lastModifiedTime = lastModifiedTime;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Integer getIfEnabled() {
-		return ifEnabled;
-	}
-
-	public void setIfEnabled(Integer ifEnabled) {
-		this.ifEnabled = ifEnabled;
-	}
-
-	public Long getCreator() {
-		return creator;
-	}
-
-	public void setCreator(Long creator) {
-		this.creator = creator;
-	}
-
-	public String getCreatorAccount() {
-		return creatorAccount;
-	}
-
-	public void setCreatorAccount(String creatorAccount) {
-		this.creatorAccount = creatorAccount;
-	}
-
-	public String getCreatorName() {
-		return creatorName;
-	}
-
-	public void setCreatorName(String creatorName) {
-		this.creatorName = creatorName;
-	}
-
-	public Timestamp getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Timestamp createTime) {
-		this.createTime = createTime;
-	}
-
-	public Long getModifier() {
-		return modifier;
-	}
-
-	public void setModifier(Long modifier) {
-		this.modifier = modifier;
-	}
-
-	public String getModifyAccount() {
-		return modifyAccount;
-	}
-
-	public void setModifyAccount(String modifyAccount) {
-		this.modifyAccount = modifyAccount;
-	}
-
-	public String getModifyName() {
-		return modifyName;
-	}
-
-	public void setModifyName(String modifyName) {
-		this.modifyName = modifyName;
-	}
-
-	public Timestamp getLastModifiedTime() {
-		return lastModifiedTime;
-	}
-
-	public void setLastModifiedTime(Timestamp lastModifiedTime) {
-		this.lastModifiedTime = lastModifiedTime;
-	}
 }

@@ -17,53 +17,42 @@ import java.util.List;
  */
 public class BaseServiceImpl<T> implements BaseService<T> {
 
-	@Override
 	public T getBaseEntity(Long id) {
 		return null;
 	}
 
-	@Override
 	public void createBaseEntity(T t) throws Exception {
 	}
 
-	@Override
 	public void saveBatch(List<T> list) {
 	}
 
-	@Override
 	public void deleteBaseEntityById(Long id) {
 	}
 
-	@Override
 	public void deleteBaseEntity(T t) {
 	}
 
-	@Override
 	public T updateBaseEntity(T t) {
 		return null;
 	}
 
-	@Override
 	public Integer batchUpdate(List<T> parameter) throws Exception {
 		return null;
 	}
 
-	@Override
 	public T saveWithResult(T t) {
 		return null;
 	}
 
-	@Override
 	public List<T> findForJdbcParam(T record) throws Exception {
 		return null;
 	}
 
-	@Override
 	public Integer getCountForJdbcParam(T record) throws Exception {
 		return null;
 	}
 
-	@Override
 	public T findOneForJdbc(T record) throws Exception {
 		return null;
 	}
