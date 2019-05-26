@@ -15,7 +15,8 @@
 - [ ] **Apache**
     - [ ] collection
     - [ ] lang
-    - [ ] poi 操作
+    - [ ] poi 操作 
+    	- org.dllwh.utils.apache.poi
 - [ ] **数据库操作-database**
     - [ ] Redis
         - [ ] Jedis 单机与集群
@@ -51,6 +52,9 @@
     - [ ] 谷歌
 - [ ] **支付-paysystem**
 - [ ] **帮助类-application**
+- [ ] **邮箱**
+    - Apache Commons Email
+    - Java Mail 原生态
 
 
 [Markdown基本使用](./Markdown.md)

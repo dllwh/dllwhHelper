@@ -40,12 +40,6 @@
 			<version>1.4.7</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>27.0.1-jre</version>
-		</dependency>
-
 		<!-- Redis 相关依赖:redisson -->
 		<dependency>
 			<groupId>org.redisson</groupId>
@@ -73,5 +67,53 @@
 			<version>3.10.1</version>
 		</dependency>
 
+		<!-- 获取User Agent用户代理:解析客户端操作系统、浏览器等 -->
+		<dependency>
+			<groupId>nl.bitwalker</groupId>
+			<artifactId>UserAgentUtils</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+
+		<!-- json-lib是需要区分jdk版本的,pom.xml中的配置应加上<classifier>标签,如用jdk15. -->
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.belerweb</groupId>
+			<artifactId>pinyin4j</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.54</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>3.6</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+			<version>1.46</version>
+		</dependency>
 	</dependencies>
 </project>
