@@ -1,6 +1,8 @@
 package org.dllwh.common.exception;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.SocketTimeoutException;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
@@ -21,8 +23,8 @@ import org.apache.http.client.ClientProtocolException;
  * @since: JDK 1.8
  */
 public final class ExceptionHelper extends ExceptionUtils {
-	private static String MARKED_WORDS_ONE = "调用%s.%s()方法出现异常,原因是:%s";
-	private static String MARKED_WORDS_TWO = "调用%s方法出现异常,原因是:%s";
+	private static String	MARKED_WORDS_ONE	= "调用%s.%s()方法出现异常,原因是:%s";
+	private static String	MARKED_WORDS_TWO	= "调用%s方法出现异常,原因是:%s";
 
 	/**
 	 * @方法描述: 异常提示语
@@ -34,8 +36,7 @@ public final class ExceptionHelper extends ExceptionUtils {
 	 *            出现异常的提示
 	 */
 	public static void getExceptionHint(String className, String methodName, String tips) {
-		throw new IllegalArgumentException(
-				String.format(MARKED_WORDS_ONE, className, methodName, tips));
+		throw new IllegalArgumentException(String.format(MARKED_WORDS_ONE, className, methodName, tips));
 	}
 
 	/**
@@ -82,6 +83,29 @@ public final class ExceptionHelper extends ExceptionUtils {
 		}
 		if (e instanceof Exception) {
 			throw new RuntimeException("请求通信[" + url + "]时偶遇异常,堆栈轨迹如下", e);
+		}
+	}
+
+	/**
+	 * @方法描述:返回错误信息字符串
+	 * @param exception
+	 * @return
+	 */
+	public static String getExceptionMessage(Exception exception) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		exception.printStackTrace(pw);
+		return sw.toString();
+	}
+
+	/**
+	 * @方法描述:将CheckedException转换为UncheckedException
+	 */
+	public static RuntimeException unchecked(Exception e) {
+		if (e instanceof RuntimeException) {
+			return (RuntimeException) e;
+		} else {
+			return new RuntimeException(e);
 		}
 	}
 }
