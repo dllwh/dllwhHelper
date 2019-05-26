@@ -12,4 +12,12 @@
 	<name>dllwh-common</name>
 	<url>http://maven.apache.org</url>
 	<version>${dllwh-common.version}</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>27.0.1-jre</version>
+		</dependency>
+	</dependencies>
 </project>
