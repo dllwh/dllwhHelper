@@ -5,6 +5,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.apache.commons.mail.EmailException;
 import org.dllwh.common.constanst.ConstantHelper;
 import org.dllwh.utils.application.email.entity.FolderInfo;
 import org.dllwh.utils.application.email.entity.MailDetail;
@@ -53,9 +54,10 @@ abstract class EmailConfig {
 	 * @param ccReceiver  抄送人
 	 * @param bccReceiver 密送人
 	 * @throws MessagingException
+	 * @throws EmailException 
 	 * @throws AddressException
 	 */
-	public abstract boolean send(String subject, String content, String receiver, String ccReceiver, String bccReceiver);
+	public abstract void send(String subject, String content, String receiver, String ccReceiver, String bccReceiver) throws MessagingException, EmailException;
 
 	/**
 	 * @方法描述 : 群发邮件
@@ -65,10 +67,11 @@ abstract class EmailConfig {
 	 * @param ccReceivers  邮件相关信息 - 抄送人列表
 	 * @param bccReceivers 邮件相关信息 - 密送人列表
 	 * @throws MessagingException
+	 * @throws EmailException 
 	 * @throws AddressException
 	 */
-	public abstract boolean send(String subject, String content, List<String> receivers, List<String> ccReceivers,
-			List<String> bccReceivers);
+	public abstract void send(String subject, String content, String[] receivers, String[] ccReceivers,
+			String[] bccReceivers) throws MessagingException, EmailException;
 
 	/**
 	 * @方法描述: 发送文本格式或Html格式的Email的方式

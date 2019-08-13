@@ -1,8 +1,6 @@
 package org.dllwh.utils.application.email;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -15,10 +13,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 把今天最好的表现当作明天最新的起点．．～
@@ -31,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
  * @版本: V1.0.1
  * @since: JDK 1.8
  */
-@Slf4j
 public final class JavaMailHelper extends EmailConfig {
 	/** 用于连接邮件服务器的参数配置（发送邮件时才需要用到） */
 	private Properties sendProps = new Properties();
@@ -125,14 +120,14 @@ public final class JavaMailHelper extends EmailConfig {
 	 * @return
 	 * @throws MessagingException
 	 */
-	private Message createMimeMessage(String subject, String content, List<String> receivers, List<String> ccReceivers,
-			List<String> bccReceivers) throws MessagingException {
+	private Message createMimeMessage(String subject, String content, String[] receivers, String[] ccReceivers,
+			String[] bccReceivers) throws MessagingException {
 		// 根据session创建一个邮件消息
 		Message mailMessage = new MimeMessage(sendMailSession);
 		// 创建邮件发送者地址
-		Address from = null ;
+		Address from = null;
 		// 设置邮件消息的发送者
-		if(StringUtils.isNotEmpty(nickName)) {
+		if (StringUtils.isNotEmpty(nickName)) {
 			try {
 				from = new InternetAddress(userName, nickName, CHARSET);
 			} catch (Exception e) {
@@ -142,26 +137,26 @@ public final class JavaMailHelper extends EmailConfig {
 			from = new InternetAddress(userName);
 		}
 		mailMessage.setFrom(from);
-		
+
 		// 创建邮件的接收者地址，并设置到邮件消息中
-		if (CollectionUtils.isNotEmpty(receivers)) {// 收件人
-			InternetAddress[] addresses = new InternetAddress[receivers.size()];
-			for (int i = 0; i < receivers.size(); i++) {
-				addresses[i] = new InternetAddress(receivers.get(i));
+		if (ArrayUtils.isNotEmpty(receivers)) {// 收件人
+			InternetAddress[] addresses = new InternetAddress[receivers.length];
+			for (int i = 0; i < receivers.length; i++) {
+				addresses[i] = new InternetAddress(receivers[i]);
 			}
 			mailMessage.setRecipients(Message.RecipientType.TO, addresses);
 		}
-		if (CollectionUtils.isNotEmpty(ccReceivers)) {// 抄送人
-			InternetAddress[] addresses = new InternetAddress[ccReceivers.size()];
-			for (int i = 0; i < ccReceivers.size(); i++) {
-				addresses[i] = new InternetAddress(ccReceivers.get(i));
+		if (ArrayUtils.isNotEmpty(ccReceivers)) {// 抄送人
+			InternetAddress[] addresses = new InternetAddress[ccReceivers.length];
+			for (int i = 0; i < ccReceivers.length; i++) {
+				addresses[i] = new InternetAddress(ccReceivers[i]);
 			}
 			mailMessage.setRecipients(Message.RecipientType.CC, addresses);
 		}
-		if (CollectionUtils.isNotEmpty(bccReceivers)) {// 密送人
-			InternetAddress[] addresses = new InternetAddress[bccReceivers.size()];
-			for (int i = 0; i < bccReceivers.size(); i++) {
-				addresses[i] = new InternetAddress(bccReceivers.get(i));
+		if (ArrayUtils.isNotEmpty(bccReceivers)) {// 密送人
+			InternetAddress[] addresses = new InternetAddress[bccReceivers.length];
+			for (int i = 0; i < bccReceivers.length; i++) {
+				addresses[i] = new InternetAddress(bccReceivers[i]);
 			}
 			mailMessage.setRecipients(Message.RecipientType.BCC, addresses);
 		}
@@ -178,31 +173,19 @@ public final class JavaMailHelper extends EmailConfig {
 	}
 
 	@Override
-	public boolean send(String subject, String textMsg, String receiver, String ccReceiver, String bccReceiver) {
-
-		try {
-			Message msg = createMimeMessage(subject, textMsg, Arrays.asList(receiver), Arrays.asList(ccReceiver),
-					Arrays.asList(bccReceiver));
-			// 发送邮件
-			Transport.send(msg);
-			return true;
-		} catch (MessagingException e) {
-			log.error("发送邮件出现异常：", e);
-		}
-		return false;
+	public void send(String subject, String textMsg, String receiver, String ccReceiver, String bccReceiver)
+			throws MessagingException {
+		Message msg = createMimeMessage(subject, textMsg, new String[] { receiver }, new String[] { ccReceiver },
+				new String[] { bccReceiver });
+		// 发送邮件
+		Transport.send(msg);
 	}
 
 	@Override
-	public boolean send(String subject, String content, List<String> receivers, List<String> ccReceivers,
-			List<String> bccReceivers) {
-		try {
-			Message msg = createMimeMessage(subject, content, receivers, ccReceivers, bccReceivers);
-			// 发送邮件
-			Transport.send(msg);
-			return true;
-		} catch (MessagingException e) {
-			log.error("发送邮件出现异常：", e);
-		}
-		return false;
+	public void send(String subject, String content, String[] receivers, String[] ccReceivers, String[] bccReceivers)
+			throws MessagingException {
+		Message msg = createMimeMessage(subject, content, receivers, ccReceivers, bccReceivers);
+		// 发送邮件
+		Transport.send(msg);
 	}
 }
