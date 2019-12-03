@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.dllwh</groupId>
+		<artifactId>dllwhHelper</artifactId>
+		<version>${dllwhHelper.version}</version>
+	</parent>
+	<groupId>org.dllwh.monitor</groupId>
+	<artifactId>dllwh-monitor</artifactId>
+	<name>dllwh-monitor</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<!-- 系统信息收集API Sigar -->
+		<dependency>
+			<groupId>org.fusesource</groupId>
+			<artifactId>sigar</artifactId>
+			<version>1.6.4</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/sigar-1.6.4.jar</systemPath>
+		</dependency>
+	</dependencies>
+</project>
