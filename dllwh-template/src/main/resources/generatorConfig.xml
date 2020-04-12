@@ -17,25 +17,26 @@
 
 		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
 
-		<commentGenerator>
-			<property name="suppressDate" value="true" />
-			<property name="dateFormat" value="yyyy-MM-dd" />
-			<property name="suppressAllComments" value="true" />
-			<property name="addRemarkComments" value="true" />
+		<commentGenerator type="${customCommentGenerator.address}">
+			<!-- <property name="author" value="${customCommentGenerator.property.author}"/>
+			<property name="email" value="${customCommentGenerator.property.email}"/>
+			<property name="version" value="${customCommentGenerator.property.version}"/>
+			<property name="addGetComments" value="${customCommentGenerator.property.addGetComments}"/>
+			<property name="addSetComments" value="${customCommentGenerator.property.addSetComments}"/> -->
 		</commentGenerator>
 
 		<jdbcConnection driverClass="${spring.datasource.driverClassName}"
 			connectionURL="${spring.datasource.url}" userId="${spring.datasource.username}"
 			password="${spring.datasource.password}" />
 
-		<javaModelGenerator targetPackage="org.dllwh.model" targetProject="src/main/java">
+		<javaModelGenerator targetPackage="${model.target.package}" targetProject="${target.project}">
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>
 
-		<sqlMapGenerator targetPackage="org.dllwh.dao.impl" targetProject="src/main/java">
+		<sqlMapGenerator targetPackage="${mapper.target.package}" targetProject="${target.project}">
 		</sqlMapGenerator>
 
-		<javaClientGenerator type="XMLMAPPER" targetPackage="org.dllwh.dao" targetProject="src/main/java">
+		<javaClientGenerator type="XMLMAPPER" targetPackage="${dao.target.package}" targetProject="${target.project}">
 		</javaClientGenerator>
 
 		<table tableName="sys_menu" enableInsert="true" enableSelectByPrimaryKey="true" enableSelectByExample="false"
