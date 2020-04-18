@@ -1,5 +1,6 @@
 package org.dllwh.template.database.mybatis.custom;
 
+import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.mybatis.generator.api.dom.java.Parameter;
 import org.mybatis.generator.api.dom.java.TopLevelClass;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.MergeConstants;
-import org.mybatis.generator.internal.util.StringUtility;
 
 /**
  * 把今天最好的表现当作明天最新的起点．．～
@@ -28,7 +28,7 @@ import org.mybatis.generator.internal.util.StringUtility;
  * @类描述: MyBatis Generator 自定义comment生成器.
  * @author: <a href="mailto:duleilewuhen@sina.com">独泪了无痕</a>
  * @创建时间: 2020-04-10
- * @版本: V 1.0.1
+ * @版本: V 1.0.2
  * @since: JDK 1.8
  */
 public class CustomSQLCommentGenerator implements CommentGenerator {
@@ -40,8 +40,6 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 	private boolean suppressAllComments;
 	/** 是否添加数据库内的注释 */
 	private boolean addRemarkComments;
-	/** properties配置文件 */
-	private Properties systemPro;
 	/** 生成的注释中，时间的显示格式 */
 	private SimpleDateFormat dateFormat;
 	/** 自定义属性 - 创建人 */
@@ -58,7 +56,6 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 	public CustomSQLCommentGenerator() {
 		super();
 		properties = new Properties();
-		systemPro = System.getProperties();
 		suppressDate = false;
 		suppressAllComments = false;
 		addRemarkComments = true;
@@ -79,7 +76,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		addSetComments = "false".equalsIgnoreCase(properties.getProperty("addSetComments")) ? false : true;
 
 		String dateFormatString = properties.getProperty("dateFormat", "yyyy-MM-dd HH:mm:ss");
-		if (StringUtility.stringHasValue(dateFormatString)) {
+		if (stringHasValue(dateFormatString)) {
 			dateFormat = new SimpleDateFormat(dateFormatString);
 		}
 	}
@@ -97,9 +94,9 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		String remarks = introspectedColumn.getRemarks();
 
 		// 开启注释，并且数据库中comment有值
-		if (addRemarkComments && StringUtils.isNotBlank(remarks)) {
+		if (addRemarkComments && stringHasValue(remarks)) {
 			// 通过换行符分割
-			String[] remarkLines = remarks.split(systemPro.getProperty("line.separator"));
+			String[] remarkLines = remarks.split(System.getProperty("line.separator"));
 			int length = remarkLines.length;
 			// 如果有多行，就换行显示
 			if (length > 1) {
@@ -117,7 +114,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 	}
 
 	/**
-	 * Java属性注释,注释为空就不给属性添加。
+	 * 实体类的静态字段,为空就不给属性添加。
 	 */
 	@Override
 	public void addFieldComment(Field field, IntrospectedTable introspectedTable) {
@@ -149,20 +146,25 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		topLevelClass.addJavaDocLine(" * ");
 		topLevelClass.addJavaDocLine(" * @数据表 : " + tableName);
 
-		if (StringUtils.isNotBlank(tableRemarks)) {
+		if (stringHasValue(tableRemarks)) {
 			topLevelClass.addJavaDocLine(" * ");
-			topLevelClass.addJavaDocLine(" * @数据表注释 : " + tableRemarks);
+			topLevelClass.addJavaDocLine(" * @数据表注释 : ");
+			String[] remarkLines = tableRemarks.split(System.getProperty("line.separator"));
+			for (String remarkLine : remarkLines) {
+				topLevelClass.addJavaDocLine(" * " + remarkLine);
+			}
 		}
 		topLevelClass.addJavaDocLine(" * ");
-		if (StringUtils.isNotBlank(email) && StringUtils.isNotBlank(author)) {
+
+		if (stringHasValue(email) && stringHasValue(author)) {
 			topLevelClass.addJavaDocLine(" * @author : <a href=\"mailto:" + email + "\"> " + author + "</a>");
-		} else if (StringUtils.isNotBlank(author) && StringUtils.isBlank(email)) {
+		} else if (stringHasValue(author) && StringUtils.isBlank(email)) {
 			topLevelClass.addJavaDocLine(" * @author : " + author);
 		}
 
 		topLevelClass.addJavaDocLine(" * @创建时间 : " + getDateString());
 		topLevelClass.addJavaDocLine(" * @版本 : " + version);
-		topLevelClass.addJavaDocLine(" * @since : " + systemPro.getProperty("java.version"));
+		topLevelClass.addJavaDocLine(" * @since : " + System.getProperty("java.version"));
 		topLevelClass.addJavaDocLine(" * @see <a href=\"\">TODO(连接内容简介)</a>");
 		topLevelClass.addJavaDocLine(" */");
 	}
@@ -195,6 +197,12 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		if (suppressAllComments) {
 			return;
 		}
+		StringBuilder sb = new StringBuilder();
+		innerEnum.addJavaDocLine("/**");
+		sb.append(introspectedTable.getFullyQualifiedTable());
+		innerEnum.addJavaDocLine(sb.toString());
+		addJavadocTag(innerEnum, false);
+		innerEnum.addJavaDocLine(" */");
 	}
 
 	/**
@@ -210,7 +218,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(" * ");
-		if (StringUtility.stringHasValue(introspectedColumn.getRemarks())) {
+		if (stringHasValue(introspectedColumn.getRemarks())) {
 			sb.append(introspectedColumn.getRemarks());
 			method.addJavaDocLine(sb.toString());
 			method.addJavaDocLine(" *");
@@ -220,7 +228,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		sb.append(" * @return ");
 		sb.append(introspectedColumn.getActualColumnName());
 
-		if (StringUtility.stringHasValue(introspectedColumn.getRemarks())) {
+		if (stringHasValue(introspectedColumn.getRemarks())) {
 			sb.append(" - ");
 			sb.append(introspectedColumn.getRemarks());
 
@@ -241,7 +249,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		}
 		method.addJavaDocLine("/**");
 		StringBuilder sb = new StringBuilder();
-		if (StringUtility.stringHasValue(introspectedColumn.getRemarks())) {
+		if (stringHasValue(introspectedColumn.getRemarks())) {
 			sb.append(" * ");
 			sb.append(introspectedColumn.getRemarks());
 			method.addJavaDocLine(sb.toString());
@@ -252,7 +260,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		sb.setLength(0);
 		sb.append(" * @param ");
 		sb.append(parm.getName());
-		if (StringUtility.stringHasValue(introspectedColumn.getRemarks())) {
+		if (stringHasValue(introspectedColumn.getRemarks())) {
 			sb.append(" ");
 			sb.append(introspectedColumn.getRemarks());
 		}
@@ -276,7 +284,8 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		method.addJavaDocLine(" * ");
 		// 如果有返回类型，添加@return
 		String returnType = "void";
-		if (!returnType.equals(method.getReturnType().toString())) {
+
+		if (method.getReturnType() != null && !returnType.equals(method.getReturnType().toString())) {
 			method.addJavaDocLine(" * @return ");
 		}
 		// addJavadocTag(method, false);
@@ -298,7 +307,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 	}
 
 	/**
-	 * Mybatis的Mapper.xml文件里面的注释
+	 * 实体类对应的mapper.xml注释，mapper类不加注释，如有需要参考 DefaultCommentGenerator
 	 */
 	@Override
 	public void addComment(XmlElement xmlElement) {

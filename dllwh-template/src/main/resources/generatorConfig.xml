@@ -16,15 +16,23 @@
 		<property name="endingDelimiter" value="`" />
 
 		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+		<plugin type="${custom.plugin.LombokPlugin}">
+			<property name="defaultSerialVersionUID" value="true" />
+			<property name="supperClass" value="${custom.plugin.LombokPlugin.supperClass}" />
+			<property name="ignoreFields" value="${custom.plugin.LombokPlugin.ignoreFields}" />
+			<property name="author" value="${custom.property.author}"/>
+			<property name="email" value="${custom.property.email}"/>
+			<property name="version" value="${custom.property.version}"/>
+		</plugin>
 
-		<commentGenerator type="${customCommentGenerator.address}">
-			<!-- <property name="author" value="${customCommentGenerator.property.author}"/>
-			<property name="email" value="${customCommentGenerator.property.email}"/>
-			<property name="version" value="${customCommentGenerator.property.version}"/>
-			<property name="addGetComments" value="${customCommentGenerator.property.addGetComments}"/>
-			<property name="addSetComments" value="${customCommentGenerator.property.addSetComments}"/> -->
+		<commentGenerator type="${custom.plugin.commentGenerator}">
+			<property name="author" value="${custom.property.author}"/>
+			<property name="email" value="${custom.property.email}"/>
+			<property name="version" value="${custom.property.version}"/>
+			<property name="addGetComments" value="${custom.property.addGetComments}"/>
+			<property name="addSetComments" value="${custom.property.addSetComments}"/>
 		</commentGenerator>
-
+		
 		<jdbcConnection driverClass="${spring.datasource.driverClassName}"
 			connectionURL="${spring.datasource.url}" userId="${spring.datasource.username}"
 			password="${spring.datasource.password}" />
