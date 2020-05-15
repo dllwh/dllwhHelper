@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @描述:
- * 		<ul>
+ *      <ul>
  *      <li>用于读取Java的配置文件</li>
  *      <li>Properties 类存在于包 Java.util 中，该类继承自 Hashtable</li>
  *      <li>1.load(inputStream inStream):从输入流中读取属性列表（键和元素对）</li>
@@ -47,13 +47,14 @@ public class PropertyHelper {
 		try {
 			fileUrl = PropertyHelper.class.getClassLoader().getResource(filePath);
 
-			if (fileUrl != null)
+			if (fileUrl != null) {
 				ist = fileUrl.openStream();
-			else
+			} else {
 				ist = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
-
-			if (ist == null)
+			}
+			if (ist == null) {
 				ist = PropertyHelper.class.getResourceAsStream(filePath);
+			}
 			isr = new InputStreamReader(ist, "UTF-8");
 			props.load(isr);
 		} catch (Exception e) {
@@ -116,8 +117,7 @@ public class PropertyHelper {
 	/**
 	 * 从系统属性文件中获取相应的值
 	 *
-	 * @param key
-	 *            key
+	 * @param key key
 	 * @return 返回value
 	 */
 	public final static String getSyskey(String key) {
