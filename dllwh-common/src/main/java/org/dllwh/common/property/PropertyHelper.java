@@ -1,5 +1,7 @@
 package org.dllwh.common.property;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -9,7 +11,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,9 +28,9 @@ import org.apache.commons.logging.LogFactory;
  *      </ul>
  * @author: 独泪了无痕
  * @date: 2015-8-20 下午10:03:05
- * @version: V1.2
+ * @version: V1.3
  */
-public class PropertyHelper {
+public final class PropertyHelper {
 	private static final Log log = LogFactory.getLog(PropertyHelper.class);
 
 	/**
@@ -39,6 +40,9 @@ public class PropertyHelper {
 	 * @return
 	 */
 	public static Properties getProps(String filePath) {
+		if (isBlank(filePath)) {
+			return null;
+		}
 		InputStream ist = null;
 		InputStreamReader isr = null;
 		URL fileUrl = null;
@@ -55,8 +59,10 @@ public class PropertyHelper {
 			if (ist == null) {
 				ist = PropertyHelper.class.getResourceAsStream(filePath);
 			}
-			isr = new InputStreamReader(ist, "UTF-8");
-			props.load(isr);
+			if (ist == null) {
+				isr = new InputStreamReader(ist, "UTF-8");
+				props.load(isr);
+			}
 		} catch (Exception e) {
 			log.info("读取Property文件出错：", e);
 			e.printStackTrace();
@@ -76,23 +82,9 @@ public class PropertyHelper {
 	 */
 	public static Map<String, String> getMapByProperties(String filePath) {
 		Properties properties = getProps(filePath);
-		Map<String, String> resultMap = new LinkedHashMap<String, String>();
-		Set<String> keySets = properties.stringPropertyNames();
-		Object[] keys = keySets.toArray();
-		for (int i = 0; i < keys.length; i++) {
-			String key = (String) keys[i];
-			resultMap.put(key, properties.getProperty(key));
+		if (properties == null || properties.isEmpty()) {
+			return null;
 		}
-		return resultMap;
-	}
-
-	/**
-	 * @方法:获取properties属性的Map集合
-	 * @创建人:独泪了无痕
-	 * @param properties
-	 * @return
-	 */
-	public static Map<String, String> getPropertyMap(Properties properties) {
 		Map<String, String> resultMap = new LinkedHashMap<String, String>();
 		Set<String> keySets = properties.stringPropertyNames();
 		Object[] keys = keySets.toArray();
@@ -111,6 +103,9 @@ public class PropertyHelper {
 	 * @return
 	 */
 	public static String getProperty(Properties props, String key) {
+		if (!props.isEmpty() && isBlank(key)) {
+			return "";
+		}
 		return props.getProperty(key);
 	}
 
@@ -133,7 +128,7 @@ public class PropertyHelper {
 	 */
 	public static int getIntValue(Properties props, String key) {
 		String result = getProperty(props, key);
-		return StringUtils.isBlank(result) ? 0 : Integer.parseInt(result);
+		return isBlank(result) ? 0 : Integer.parseInt(result);
 	}
 
 	/**
@@ -145,7 +140,7 @@ public class PropertyHelper {
 	 */
 	public static boolean getBooleanValue(Properties props, String key) {
 		String result = getProperty(props, key);
-		return StringUtils.isBlank(result) ? false : Boolean.parseBoolean(result);
+		return isBlank(result) ? false : Boolean.parseBoolean(result);
 	}
 
 	/**
@@ -157,7 +152,7 @@ public class PropertyHelper {
 	 */
 	public static long getLongValue(Properties props, String key) {
 		String result = getProperty(props, key);
-		return StringUtils.isBlank(result) ? 0 : Long.parseLong(result);
+		return isBlank(result) ? 0 : Long.parseLong(result);
 	}
 
 	/**
@@ -169,6 +164,6 @@ public class PropertyHelper {
 	 */
 	public static double getDoubleValue(Properties props, String key) {
 		String result = getProperty(props, key);
-		return StringUtils.isBlank(result) ? 0.0d : Double.parseDouble(result);
+		return isBlank(result) ? 0.0d : Double.parseDouble(result);
 	}
 }
