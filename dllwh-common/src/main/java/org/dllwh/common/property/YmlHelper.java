@@ -20,12 +20,12 @@ import org.yaml.snakeyaml.Yaml;
  * @类描述: Java代码解析yml文件
  * @author: <a href="mailto:duleilewuhen@sina.com">独泪了无痕</a>
  * @创建时间: 2020-05-22
- * @版本: V 1.0.1
+ * @版本: V 1.0.2
  * @since: JDK 1.8
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings("all")
 public final class YmlHelper {
-	private static Map<String, String> yamlMap = new HashMap<String, String>();
+	private static Map<String, Object> yamlMap = new HashMap<String, Object>();
 
 	/**
 	 * 
@@ -33,7 +33,7 @@ public final class YmlHelper {
 	 *
 	 * @param filePath 指定路径yaml 文件
 	 */
-	public static Map<String, String> getYmlByFileName(String filePath) {
+	public static Map<String, Object> getYmlByFileName(String filePath) {
 
 		if (isBlank(filePath)) {
 			return null;
@@ -54,6 +54,23 @@ public final class YmlHelper {
 		return yamlMap;
 	}
 
+	/**
+	 * @方法描述: 获取配置
+	 *
+	 * @param key
+	 * @return
+	 */
+	public static String getConfigValue(String key) {
+		if (yamlMap.isEmpty()) {
+			return "";
+		}
+		Object value = yamlMap.get(key);
+		if (value != null) {
+			return value.toString();
+		}
+		return "";
+	}
+
 	private static <K, V> void iteratorYml(Map<String, Object> map, String key) {
 		Iterator<?> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
@@ -67,13 +84,12 @@ public final class YmlHelper {
 					iteratorYml((Map) value, key + "." + key2.toString());
 				}
 			}
-			if (value instanceof String) {
-				if (key == null) {
-					yamlMap.put(key2.toString(), value.toString());
-				}
-				if (key != null) {
-					yamlMap.put(key + "." + key2.toString(), value.toString());
-				}
+
+			if (key == null) {
+				yamlMap.put(key2.toString(), value);
+			}
+			if (key != null) {
+				yamlMap.put(key + "." + key2.toString(), value);
 			}
 		}
 	}
