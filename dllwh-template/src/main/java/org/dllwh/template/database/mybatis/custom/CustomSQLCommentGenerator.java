@@ -1,22 +1,12 @@
 package org.dllwh.template.database.mybatis.custom;
 
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
+import static org.mybatis.generator.internal.util.StringUtility.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import org.apache.commons.lang3.StringUtils;
-import org.mybatis.generator.api.CommentGenerator;
-import org.mybatis.generator.api.IntrospectedColumn;
-import org.mybatis.generator.api.IntrospectedTable;
-import org.mybatis.generator.api.dom.java.CompilationUnit;
-import org.mybatis.generator.api.dom.java.Field;
-import org.mybatis.generator.api.dom.java.InnerClass;
-import org.mybatis.generator.api.dom.java.InnerEnum;
-import org.mybatis.generator.api.dom.java.JavaElement;
-import org.mybatis.generator.api.dom.java.Method;
-import org.mybatis.generator.api.dom.java.Parameter;
-import org.mybatis.generator.api.dom.java.TopLevelClass;
+import org.mybatis.generator.api.*;
+import org.mybatis.generator.api.dom.java.*;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.MergeConstants;
 
@@ -72,8 +62,8 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 		author = properties.getProperty("author", "");
 		email = properties.getProperty("email", "");
 		version = properties.getProperty("version", "V 1.0.1");
-		addGetComments = "false".equalsIgnoreCase(properties.getProperty("addGetComments")) ? false : true;
-		addSetComments = "false".equalsIgnoreCase(properties.getProperty("addSetComments")) ? false : true;
+		addGetComments = isTrue(properties.getProperty("addGetComments")) ? true : false;
+		addSetComments = isTrue(properties.getProperty("addSetComments")) ? true : false;
 
 		String dateFormatString = properties.getProperty("dateFormat", "yyyy-MM-dd HH:mm:ss");
 		if (stringHasValue(dateFormatString)) {
@@ -158,8 +148,10 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 
 		if (stringHasValue(email) && stringHasValue(author)) {
 			topLevelClass.addJavaDocLine(" * @author : <a href=\"mailto:" + email + "\"> " + author + "</a>");
-		} else if (stringHasValue(author) && StringUtils.isBlank(email)) {
+		} else if (stringHasValue(author) && !stringHasValue(email)) {
 			topLevelClass.addJavaDocLine(" * @author : " + author);
+		} else if (stringHasValue(email) && !stringHasValue(author)) {
+			topLevelClass.addJavaDocLine(" * @email : " + email);
 		}
 
 		topLevelClass.addJavaDocLine(" * @创建时间 : " + getDateString());
@@ -277,7 +269,7 @@ public class CustomSQLCommentGenerator implements CommentGenerator {
 			return;
 		}
 		method.addJavaDocLine("/**");
-		method.addJavaDocLine(" * @方法描述 : " + method.getName());
+		method.addJavaDocLine(" * " + method.getName());
 		method.addJavaDocLine(" * ");
 		List<Parameter> parameters = method.getParameters();
 		parameters.forEach(parameter -> method.addJavaDocLine(" * @param " + parameter.getName()));

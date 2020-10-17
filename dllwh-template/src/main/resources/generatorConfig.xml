@@ -2,57 +2,82 @@
 <!DOCTYPE generatorConfiguration
 	PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
 	"http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
-
 <!-- 所有的配置均在根元素 generatorConfiguration 下 -->
 <generatorConfiguration>
 	<properties resource="mybatis-generator.properties" />
 
 	<context id="MySqlContext" targetRuntime="MyBatis3">
 		<property name="autoDelimitKeywords" value="true" />
+		<!-- 生成的 Java 文件的编码 -->
 		<property name="javaFileEncoding" value="UTF-8" />
+		<!-- 格式化 Java 代码 -->
 		<property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter" />
+		<!-- 格式化 XML 代码 -->
 		<property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter" />
 		<property name="beginningDelimiter" value="`" />
 		<property name="endingDelimiter" value="`" />
 
 		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
-		<plugin type="${custom.plugin.LombokPlugin}">
-			<property name="defaultSerialVersionUID" value="true" />
-			<property name="supperClass" value="${custom.plugin.LombokPlugin.supperClass}" />
-			<property name="ignoreFields" value="${custom.plugin.LombokPlugin.ignoreFields}" />
-			<property name="author" value="${custom.property.author}"/>
-			<property name="email" value="${custom.property.email}"/>
-			<property name="version" value="${custom.property.version}"/>
-		</plugin>
 
-		<commentGenerator type="${custom.plugin.commentGenerator}">
-			<property name="author" value="${custom.property.author}"/>
-			<property name="email" value="${custom.property.email}"/>
-			<property name="version" value="${custom.property.version}"/>
-			<property name="addGetComments" value="${custom.property.addGetComments}"/>
-			<property name="addSetComments" value="${custom.property.addSetComments}"/>
-		</commentGenerator>
+		<!-- 自定义lomBok插件 -->
+		<plugin type="org.dllwh.template.database.mybatis.custom.CustomLombokPlugin">
+			<property name="defaultSerialVersionUID" value="true" />
+			<property name="supperClass" value="" />
+			<property name="ignoreFields" value="" />
+			<property name="author" value="${custom.property.author}" />
+			<property name="email" value="${custom.property.email}" />
+			<property name="version" value="V 1.0.1" />
+		</plugin>
 		
-		<jdbcConnection driverClass="${spring.datasource.driverClassName}"
-			connectionURL="${spring.datasource.url}" userId="${spring.datasource.username}"
+		<!-- 自定义JavaMapper文件名 -->
+		<plugin type="org.dllwh.template.database.mybatis.custom.RenameJavaMapperPlugins">
+			<property name="searchString" value="Mapper$" />
+			<property name="replaceString" value="Dao" />
+		</plugin>
+ 
+		<!-- 自定义comment生成器地址 -->
+		<commentGenerator type="org.dllwh.template.database.mybatis.custom.CustomSQLCommentGenerator">
+			<property name="author" value="${custom.property.author}" />
+			<property name="email" value="${custom.property.email}" />
+			<property name="version" value="V 1.0.1" />
+			<property name="addGetComments" value="false" />
+			<property name="addSetComments" value="false" />
+		</commentGenerator>
+
+		<!-- 配置数据库连接 -->
+		<jdbcConnection driverClass="${spring.datasource.driverClassName}" connectionURL="${spring.datasource.url}" userId="${spring.datasource.username}"
 			password="${spring.datasource.password}" />
 
-		<javaModelGenerator targetPackage="${model.target.package}" targetProject="${target.project}">
+		<!-- 生成实体的位置 -->
+		<javaModelGenerator targetPackage="${model.target.package}" targetProject="src/main/java">
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>
 
-		<sqlMapGenerator targetPackage="${mapper.target.package}" targetProject="${target.project}">
+		<!-- 生成 Mapper 接口的位置 -->
+		<sqlMapGenerator targetPackage="${mapper.target.package}" targetProject="src/main/java">
 		</sqlMapGenerator>
-
-		<javaClientGenerator type="XMLMAPPER" targetPackage="${dao.target.package}" targetProject="${target.project}">
+		
+		<!-- 生成 Mapper XML 的位置 -->
+		<javaClientGenerator type="XMLMAPPER" targetPackage="${dao.target.package}" targetProject="src/main/java">
 		</javaClientGenerator>
-
-		<table tableName="sys_menu" enableInsert="true" enableSelectByPrimaryKey="true" enableSelectByExample="false"
-			enableUpdateByPrimaryKey="true" enableDeleteByPrimaryKey="true" enableDeleteByExample="false"
-			enableCountByExample="false" enableUpdateByExample="false">
+		
+		<!-- 设置数据库的表名和实体类名 -->
+		<table tableName="sys__operate_log" 
+			enableInsert="true" 
+			enableSelectByPrimaryKey="true" 
+			enableSelectByExample="false" 
+			enableUpdateByPrimaryKey="true" 
+			enableDeleteByPrimaryKey="true"
+			enableDeleteByExample="false" 
+			enableCountByExample="false" 
+			enableUpdateByExample="false">
 			<property name="modelOnly" value="false" />
+			<!-- 如果设置为true,生成的model类会直接使用column本身的名字,而不会再使用驼峰命名方法 -->
 			<property name="useActualColumnNames" value="false" />
 			<!-- -->
+			<columnOverride column="excep_detail" javaType="java.lang.String" jdbcType="text"/>
+			<columnOverride column="parameter" javaType="java.lang.String" jdbcType="text"/>
+			<columnOverride column="result" javaType="java.lang.String" jdbcType="text"/>
 		</table>
 	</context>
 </generatorConfiguration>

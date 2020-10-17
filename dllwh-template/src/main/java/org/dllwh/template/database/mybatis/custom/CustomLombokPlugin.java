@@ -29,7 +29,7 @@ import org.mybatis.generator.api.dom.java.TopLevelClass;
  * @类描述: myBatis-generator 集成 lomBok 的插件,自定义的lomBok注解配置
  * @author: <a href="mailto:duleilewuhen@sina.com">独泪了无痕</a>
  * @创建时间: 2020-04-16
- * @版本: V 1.0.1
+ * @版本: V 1.0.2
  * @since: JDK 1.8
  */
 public class CustomLombokPlugin extends PluginAdapter {
@@ -44,6 +44,8 @@ public class CustomLombokPlugin extends PluginAdapter {
 	private String email;
 	/** 自定义属性 - 版本 */
 	private String version;
+	/** 判断继承类是否存在 */
+	private static boolean fatherClassIsAvailable = false;
 
 	public CustomLombokPlugin() {
 		annotations = new LinkedHashSet<>(Annotations.values().length);
@@ -59,10 +61,11 @@ public class CustomLombokPlugin extends PluginAdapter {
 		version = properties.getProperty("version", "V 1.0.1");
 
 		try {
-			Class.forName(supperClass);
+			fatherClassIsAvailable = null != Class.forName(supperClass);
 		} catch (ClassNotFoundException e) {
 			warnings.add(getString("ValidationError.18", "CustomLombokPlugin", "supperClass"));
 		}
+
 		return valid;
 	}
 
@@ -120,7 +123,7 @@ public class CustomLombokPlugin extends PluginAdapter {
 		/**
 		 * 设置父类
 		 */
-		if (supperClass != null) {
+		if (fatherClassIsAvailable) {
 			FullyQualifiedJavaType fullyQualifiedJavaType = new FullyQualifiedJavaType(supperClass);
 			topLevelClass.addImportedType("lombok.EqualsAndHashCode");
 			topLevelClass.addImportedType(fullyQualifiedJavaType.getFullyQualifiedName());
@@ -132,7 +135,7 @@ public class CustomLombokPlugin extends PluginAdapter {
 		 * 将需要忽略生成的属性过滤掉
 		 */
 		List<Field> fields = topLevelClass.getFields();
-		if (null != ignoreFields && !"".equals(ignoreFields)) {
+		if (StringUtils.isNotBlank(ignoreFields) && fatherClassIsAvailable) {
 			String[] field = ignoreFields.split(",");
 			for (String ignoreField : field) {
 				for (int i = 0; i < fields.size(); i++) {
