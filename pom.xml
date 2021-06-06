@@ -85,7 +85,7 @@
 		<slf4j.version>1.6.1</slf4j.version>
 
 		<!-- 数据库 版本号 -->
-		<mysql.version>8.0.12</mysql.version>
+		<mysql.version>8.0.16</mysql.version>
 	</properties>
 
 	<!-- ======== <dependency></dependency>===================================================== 
