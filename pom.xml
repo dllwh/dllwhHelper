@@ -91,6 +91,19 @@
 	<!-- ======== <dependency></dependency>===================================================== 
 		该元素描述了项目相关的所有依赖,这些依赖组成了项目构建过程中的一个个环节,它们自动从项目定义的仓库中下载 -->
 	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.20</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- 导入Mysql数据库驱动包 -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -114,17 +127,12 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.7</version>
+			<version>3.11</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
-			<version>4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
+			<version>4.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

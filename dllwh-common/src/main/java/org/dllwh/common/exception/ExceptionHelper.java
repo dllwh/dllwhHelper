@@ -5,10 +5,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.SocketTimeoutException;
 
-import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.conn.ConnectTimeoutException;
 
 /**
  * 
