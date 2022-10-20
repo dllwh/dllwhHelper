@@ -3,7 +3,6 @@ package org.dllwh.utils.apache.poi.excel;
 import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.*;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dllwh.utils.apache.poi.excel.annotation.*;
@@ -14,14 +13,16 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
 
+import static org.dllwh.utils.apache.poi.excel.util.EnumHelper.*;
 import static org.dllwh.utils.apache.poi.excel.util.ExcelHelper.*;
+import static org.dllwh.utils.apache.poi.excel.util.AnnotationHelper.*;
 
 /**
  * 把今天最好的表现当作明天最新的起点．．～
  * <p>
  * Today the best performance as tomorrow the newest starter!
  *
- * @类描述: 导出Excel文件
+ * @类描述: Excel导出工具类
  * @author: <a href="mailto:duleilewuhen@sina.com">独泪了无痕</a>
  * @创建时间: 2022-10-03 21:22
  * @版本: V 1.0.1
@@ -29,21 +30,14 @@ import static org.dllwh.utils.apache.poi.excel.util.ExcelHelper.*;
  */
 public final class ExportExcel {
     private final Logger logger = LoggerFactory.getLogger(ExportExcel.class);
-    /**
-     * Microsoft Excel 2003 文件
-     */
-    private final static String HSSF_FILE_EXTENSION = "xls";
-    /**
-     * Microsoft Excel 2007 文件
-     */
-    private final static String XSSF_FILE_EXTENSION = "xlsx";
+
 
     /**
-     * 工作薄对象
+     * WorkBook对象
      */
     private final Workbook workbook;
     /**
-     * 工作表对象
+     * Sheet(工作表)页面对象
      */
     private Sheet sheet;
     /**
@@ -83,20 +77,16 @@ public final class ExportExcel {
     /**
      * 支持模板导出
      *
-     * @param file 模板文件
+     * @param filePath 模板文件
      */
-    public ExportExcel(File file) {
-        String fileName = file.getName();
-        if (StringUtils.isBlank(fileName)) {
+    public ExportExcel(String filePath) throws IOException {
+        if (StringUtils.isBlank(filePath)) {
             throw new RuntimeException("导出模板文档为空!");
-        } else if (HSSF_FILE_EXTENSION.toLowerCase().endsWith(fileName)) {
-            this.workbook = new HSSFWorkbook();
-        } else if (XSSF_FILE_EXTENSION.toLowerCase().endsWith(fileName)) {
-            this.workbook = new XSSFWorkbook();
         } else {
-            throw new RuntimeException("文档格式不正确!");
+            this.workbook = createWorkbook(filePath);
         }
-        logger.debug("Open the export-template successfully.");
+        this.styles = createStyles(workbook);
+        logger.debug("成功打开导出模板.");
     }
 
     /**
@@ -114,7 +104,7 @@ public final class ExportExcel {
      *
      * @param title      唯一指定的sheet名称，如果名字是null或者已经被占用抛出异常
      * @param cls        实体类，通过 @ExportField 获取设置
-     * @param isJustData 是否只导出数据，(若设置为false，导出的excel带有下拉框；若设置为true，只导出数据)
+     * @param isJustData 是否只导出数据，若设置为false，导出的excel带有下拉框，否则只导出数据)
      */
     public void addSheet(String title, Class<?> cls, Boolean isJustData) {
         if (StringUtils.isBlank(title) || workbook.getSheet(title) != null) {
@@ -150,6 +140,72 @@ public final class ExportExcel {
         createTableHeader(title, headerList);
         dataStartNum = 1;
         if (!isJustData) {
+            setDropdownBox();
+        }
+    }
+
+    /**
+     * 设置sheet页签(有模板时使用,当需要手动写入Excel单元格值时使用)
+     *
+     * @param sheetIndex sheet页序号，默认从0开始
+     */
+    public void setSheet(int sheetIndex) {
+        if (workbook.getNumberOfSheets() <= sheetIndex) {
+            throw new RuntimeException("文档中没有第" + (sheetIndex + 1) + "个Sheet页！");
+        }
+        this.sheet = getSheet(workbook, sheetIndex);
+    }
+
+    /**
+     * 设置sheet页(有模板时使用)
+     *
+     * @param cls 实体类，通过annotation.ExportField获取设置
+     */
+    public void setSheet(Class<?> cls) {
+        setSheet(0, 0, cls, false);
+    }
+
+    /**
+     * 设置sheet页(有模板时使用)
+     *
+     * @param sheetIndex sheet页序号，默认从0开始
+     * @param headerNum  标题行号，数据行号=标题行号+1
+     * @param cls        实体类，通过annotation.ExportField获取设置
+     */
+    public void setSheet(int sheetIndex, int headerNum, Class<?> cls) {
+        setSheet(sheetIndex, headerNum, cls, false);
+    }
+
+    /**
+     * 设置sheet页(有模板时使用)
+     *
+     * @param sheetIndex sheet页序号，默认从0开始
+     * @param headerNum  标题行号，数据行号=标题行号+1
+     * @param cls        实体类，通过annotation.ExportField获取设置
+     * @param isJustData 是否只导出数据，若设置为false，导出的excel带有下拉框，否则只导出数据
+     */
+    public void setSheet(int sheetIndex, int headerNum, Class<?> cls, Boolean isJustData) {
+        if (workbook.getNumberOfSheets() <= sheetIndex) {
+            throw new RuntimeException("文档中没有第" + (sheetIndex +1) + "个Sheet页！");
+        }
+        this.sheet = getSheet(workbook, sheetIndex);
+        this.headerNum = headerNum;
+        this.rowNum = headerNum +1;
+        this.dataStartNum = headerNum + 1;
+        //初始化当前sheet对应的数据类型
+        initAnnotationList(cls);
+        // 检查模板表头是否也设置一样
+        for (Object[] os : annotationList) {
+            ExcelField excelField = (ExcelField) os[0];
+            Object vlaue = getMergedRegionValue(sheet, headerNum, excelField.orderNum());
+            if (!StringUtils.contains(vlaue.toString(), excelField.title())) {
+                throw new RuntimeException("模板中表头信息" + excelField.title() + "与要导出的数据表头不一致，在" + (sheetIndex + 1) + "个sheet页！");
+            }
+
+        }
+
+        if (!isJustData) {
+            // 设置下拉框
             setDropdownBox();
         }
     }
@@ -265,8 +321,15 @@ public final class ExportExcel {
             // 如果是枚举
             if (StringUtils.isNotBlank(excelField.enumClass())) {
                 Map<String, Object> resultMap = getEnumMap(Class.forName(excelField.enumClass()));
-                val = 1 == excelField.enumType() ? resultMap.get(val) : val;
-                val = 2 == excelField.enumType() ? val + "-" + resultMap.get(String.valueOf(val)) : val;
+                switch (excelField.enumType()) {
+                    case 1:
+                        val = resultMap.get(val);
+                        break;
+                    case 2:
+                        val = val + "-" + resultMap.get(String.valueOf(val));
+                        break;
+                    default:
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -291,13 +354,14 @@ public final class ExportExcel {
      * @param headerList 表头列表
      */
     private void createTableHeader(String title, List<String> headerList) {
-        this.sheet = workbook.createSheet(title);
+        this.sheet = getSheet(workbook, title);
 
         if (headerList == null) {
             throw new RuntimeException("headerList not null!");
         }
 
-        Row headerRow = sheet.createRow(rowNum++);
+        Row headerRow = getRow(sheet, rowNum++);
+
         for (int i = 0; i < headerList.size(); i++) {
             Cell cell = headerRow.createCell(i);
             if (styles != null && styles.containsKey("header")) {
@@ -311,7 +375,7 @@ public final class ExportExcel {
             int colWidth = sheet.getColumnWidth(i) * 2;
             sheet.setColumnWidth(i, Math.max(colWidth, 3000));
         }
-        logger.debug("Initialize success.");
+        logger.info("数据初始化标题列头成功.");
     }
 
     /**
@@ -380,7 +444,7 @@ public final class ExportExcel {
                         textList = resultMap.keySet().toArray(new String[0]);
                     }
 
-                    DataValidation dataValidation = setDropdownBoxByDataSource(sheet, textList, rowNum, Short.MAX_VALUE, firstCol, endCol);
+                    DataValidation dataValidation = setDropdownBoxByDataSource(sheet, textList, rowNum, Short.MAX_VALUE, firstCol, endCol, true);
                     sheet.addValidationData(dataValidation);
                 }
             } catch (Exception ex) {

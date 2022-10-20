@@ -1,14 +1,12 @@
 package org.dllwh.utils.apache.poi.excel.util;
 
-import com.google.common.collect.Maps;
-import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.*;
-import org.dllwh.utils.apache.poi.excel.annotation.*;
-import org.dllwh.utils.apache.poi.excel.core.BaseCommonEnum;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.*;
 
-import java.lang.reflect.*;
+import java.io.*;
 import java.text.*;
 import java.util.*;
 
@@ -26,9 +24,57 @@ import java.util.*;
 public final class ExcelHelper {
     private final static Logger logger = LoggerFactory.getLogger(ExcelHelper.class);
     /**
+     * Microsoft Excel 2003 文件
+     */
+    private final static String HSSF_FILE_EXTENSION = "xls";
+    /**
+     * Microsoft Excel 2007 文件
+     */
+    private final static String XSSF_FILE_EXTENSION = "xlsx";
+    /**
      * 内置样式
      */
     private static final Map<String, CellStyle> STYLE_MAP = new HashMap<>();
+
+    /**
+     * 创建WorkBook对象
+     *
+     * @param filePath 文件路径
+     */
+    public static Workbook createWorkbook(String filePath) throws IOException {
+        if (filePath.trim().toLowerCase().endsWith("xls")) {
+            return new XSSFWorkbook(new FileInputStream(filePath));
+        } else if (filePath.trim().toLowerCase().endsWith("xlsx")) {
+            return new XSSFWorkbook(new FileInputStream(filePath));
+        } else {
+            throw new IllegalArgumentException("不是有效的excel文件格式");
+        }
+    }
+
+    /**
+     * 获取Sheet页面(按名称)
+     *
+     * @param workbook  WorkBook对象
+     * @param sheetName Sheet页签名称
+     */
+    public static Sheet getSheet(Workbook workbook, String sheetName) {
+        Sheet sheet = workbook.getSheet(sheetName);
+        if (sheet == null) {
+            sheet = workbook.createSheet(sheetName);
+        }
+        return sheet;
+    }
+
+    /**
+     * 获取Sheet页面(按页标)
+     *
+     * @param workbook WorkBook对象
+     * @param index    索引
+     */
+    public static Sheet getSheet(Workbook workbook, int index) {
+        index = Math.max(index, 0);
+        return workbook.getSheetAt(index);
+    }
 
     /**
      * 创建表格样式
@@ -156,12 +202,18 @@ public final class ExcelHelper {
     public static Object getMergedRegionValue(Sheet sheet, int row, int column) {
         int sheetMergeCount = sheet.getNumMergedRegions();
         for (int i = 0; i < sheetMergeCount; i++) {
-            CellRangeAddress ca = sheet.getMergedRegion(i);
-            int firstColumn = ca.getFirstColumn();
-            int lastColumn = ca.getLastColumn();
-            int firstRow = ca.getFirstRow();
-            int lastRow = ca.getLastRow();
+            CellRangeAddress cra = sheet.getMergedRegion(i);
+            // 合并单元格CELL起始行
+            int firstRow = cra.getFirstRow();
+            // 合并单元格CELL结束行
+            int lastRow = cra.getLastRow();
+            // 合并单元格CELL起始列
+            int firstColumn = cra.getFirstColumn();
+            // 合并单元格CELL结束列
+            int lastColumn = cra.getLastColumn();
+
             if (row >= firstRow && row <= lastRow) {
+                // 判断该单元格是否是在合并单元格中
                 if (column >= firstColumn && column <= lastColumn) {
                     return getCellValue(sheet, firstRow, firstColumn);
                 }
@@ -178,48 +230,56 @@ public final class ExcelHelper {
      * @param column 列号
      */
     public static Object getCellValue(Sheet sheet, int row, int column) {
-        Row rowObj = sheet.getRow(row);
+        Row rowObj = getRow(sheet,row);
+        Object result = null;
         try {
             Cell cell = rowObj.getCell(column);
+            // 单元格类型：Numeric:0,String:1,Formula:2,Blank:3,Boolean:4,Error:5
             if (cell != null) {
                 switch (cell.getCellType()) {
                     case BOOLEAN:
-                        return CellValue.valueOf(cell.getBooleanCellValue()).formatAsString();
-                    case NUMERIC: // 数字
-                        // 当excel 中的数据为数值或日期是需要特殊处理
+                        result = CellValue.valueOf(cell.getBooleanCellValue()).formatAsString();
+                        break;
+                    case NUMERIC:
+                        // 判断是否读取到了日期数据，如果是那就进行格式转换，否则会读取的科学计数值；不是就输出number 数字
                         if (DateUtil.isCellDateFormatted(cell)) {
                             Date date = DateUtil.getJavaDate(cell.getNumericCellValue());
                             try {
                                 return new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss").format(date);
                             } catch (Exception e1) {
                                 try {
-                                    return new SimpleDateFormat("yyyy-MM-dd  HH:mm").format(date);
+                                    result = new SimpleDateFormat("yyyy-MM-dd  HH:mm").format(date);
                                 } catch (Exception e2) {
-                                    return new SimpleDateFormat("yyyy-MM-dd").format(date);
+                                    result = new SimpleDateFormat("yyyy-MM-dd").format(date);
                                 }
                             }
 
                         } else {
                             NumberFormat numberFormat = NumberFormat.getInstance();
                             numberFormat.setGroupingUsed(false);
-                            return numberFormat.format(cell.getNumericCellValue());
+                            result = numberFormat.format(cell.getNumericCellValue());
                         }
-                    case ERROR:// 故障
-                        return CellValue.getError(cell.getErrorCellValue()).formatAsString();
-                    case STRING: // 字符串
-                        return cell.getStringCellValue();
-                    case BLANK:// 空值
-                        return null;
-                    case FORMULA: // 公式
-                        return cell.getCellFormula();
+                        break;
+                    case ERROR:
+                        result = CellValue.getError(cell.getErrorCellValue()).formatAsString();
+                        break;
+                    case STRING:
+                        result = cell.getStringCellValue();
+                        break;
+                    case BLANK:
+                        result = "";
+                        break;
+                    case FORMULA:
+                        result = cell.getCellFormula();
+                        break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + cell.getCellType());
                 }
             }
-            return "";
+            return result;
         } catch (Exception e) {
             logger.error("ExcelHelper.getCellValue出现异常，堆栈信息如下：", e);
-            return "";
+            return null;
         }
     }
 
@@ -270,137 +330,6 @@ public final class ExcelHelper {
         }
     }
 
-    /**
-     * 获取Class中设置的ExcelField注解信息
-     *
-     * @param cls cls Class
-     */
-    public static List<Object[]> getAnnotationList(Class<?> cls) {
-        List<Object[]> annotationList = new ArrayList<>();
-
-        // 获得有注解的字段
-        Field[] fs = cls.getDeclaredFields();
-        for (Field f : fs) {
-            addAnnotationListByField(annotationList, f, "", "");
-            Excel excel = f.getAnnotation(Excel.class);
-            if (excel != null) {
-                Class<?> fieldClazz = f.getType();
-                // 判断是否为集合类型
-                if (Collection.class.isAssignableFrom(fieldClazz)) {
-                    Type fc = f.getGenericType();
-                    // 如果是泛型参数的类型
-                    if (fc instanceof ParameterizedType) {
-                        ParameterizedType pt = (ParameterizedType) fc;
-                        //得到泛型里的class类型对象。
-                        Class<?> genericClazz = (Class<?>) pt.getActualTypeArguments()[0];
-                        Field[] fs2 = genericClazz.getDeclaredFields();
-                        for (Field f2 : fs2) {
-                            addAnnotationListByField(annotationList, f2, "list", f.getName());
-                        }
-                        Method[] ms2 = genericClazz.getDeclaredMethods();
-                        for (Method m2 : ms2) {
-                            addAnnotationListByMethod(annotationList, m2, "list", f.getName());
-                        }
-                    }
-                } else {
-                    Field[] fs2 = fieldClazz.getDeclaredFields();
-                    for (Field f2 : fs2) {
-                        addAnnotationListByField(annotationList, f2, "bean", f.getName());
-                    }
-                    Method[] ms2 = fieldClazz.getDeclaredMethods();
-                    for (Method m2 : ms2) {
-                        addAnnotationListByMethod(annotationList, m2, "bean", f.getName());
-                    }
-                }
-            }
-        }
-        // 获得有注解的方法
-        Method[] methodArr = cls.getDeclaredMethods();
-        for (Method method : methodArr) {
-            addAnnotationListByMethod(annotationList, method, "", "");
-            Excel excel = method.getAnnotation(Excel.class);
-            if (excel != null) {
-                Class<?> fieldClazz = method.getReturnType();
-                // 判断是否为集合类型
-                if (Collection.class.isAssignableFrom(fieldClazz)) {
-                    Type fc = method.getGenericReturnType();
-                    // 如果是泛型参数的类型
-                    if (fc instanceof ParameterizedType) {
-                        ParameterizedType pt = (ParameterizedType) fc;
-                        // 得到泛型里的class类型对象。
-                        Class<?> genericClazz = (Class<?>) pt.getActualTypeArguments()[0];
-                        Field[] fs2 = genericClazz.getDeclaredFields();
-                        for (Field f2 : fs2) {
-                            // 首字母转小写
-                            addAnnotationListByField(annotationList, f2, "list", StringUtils.uncapitalize(method.getName().substring(3)));
-                        }
-                        Method[] methodArr2 = genericClazz.getDeclaredMethods();
-                        for (Method method2 : methodArr2) {
-                            // 首字母转小写
-                            addAnnotationListByMethod(annotationList, method2, "list", StringUtils.uncapitalize(method.getName().substring(3)));
-                        }
-                    }
-                } else {
-                    Field[] fields = fieldClazz.getDeclaredFields();
-                    for (Field field : fields) {
-                        // 首字母转小写
-                        addAnnotationListByField(annotationList, field, "bean", StringUtils.uncapitalize(method.getName().substring(3)));
-                    }
-                    Method[] methods = fieldClazz.getDeclaredMethods();
-                    for (Method method3 : methods) {
-                        // 首字母转小写
-                        addAnnotationListByMethod(annotationList, method3, "bean", StringUtils.uncapitalize(method.getName().substring(3)));
-                    }
-                }
-            }
-        }
-        // 对字段排序
-        annotationList.sort(Comparator.comparingInt(o -> ((ExcelField) o[0]).orderNum()));
-        return annotationList;
-    }
-
-    /**
-     * 查找方法中设有ExcelField的信息，并将信息记入annotationList中
-     *
-     * @param method       方法对象
-     * @param mark         标记是否是bean对象还是list对象，还是基础对象
-     * @param propertyName f所属类在Bean对象（即setSheet传入的Class<?> cls参数）中对应的字段名
-     */
-    private static void addAnnotationListByMethod(List<Object[]> annotationList, Method method, String mark, String propertyName) {
-        ExcelField excelField = method.getAnnotation(ExcelField.class);
-        if (excelField != null) {
-            // 首字母转小写
-            annotationList.add(new Object[]{excelField, StringUtils.uncapitalize(method.getName().substring(3)), mark, propertyName});
-        }
-    }
-
-    /**
-     * 查找字段中设有ExcelField的信息，并将信息记入annotationList中
-     *
-     * @param field        字段对象
-     * @param mark         标记是否是bean对象还是list对象，还是基础对象
-     * @param propertyName 所属类在Bean对象（即setSheet传入的Class<?> cls参数）中对应的字段名
-     */
-    private static void addAnnotationListByField(List<Object[]> annotationList, Field field, String mark, String propertyName) {
-        ExcelField excelField = field.getAnnotation(ExcelField.class);
-        if (excelField != null) {
-            annotationList.add(new Object[]{excelField, field.getName(), mark, propertyName});
-        }
-    }
-
-    /**
-     * 设置某些列的值只能输入预制的数据，显示下拉框即。适用于下拉选项字符少于225。
-     *
-     * @param sheet    Sheet页签对象
-     * @param textList 下拉框显示的内容
-     * @param firstRow 起始行
-     * @param endRow   终止行
-     * @param firstCol 起始列
-     * @param endCol   终止列
-     */
-    public static DataValidation setDropdownBoxByDataSource(Sheet sheet, String[] textList, int firstRow, int endRow, int firstCol, int endCol) {
-        return setDropdownBoxByDataSource(sheet, textList, firstRow, endRow, firstCol, endCol, true);
-    }
 
     /**
      * 设置某些列的值只能输入预制的数据，显示下拉框即。适用于下拉选项字符少于225。
@@ -438,22 +367,6 @@ public final class ExcelHelper {
         }
 
         return dataValidation;
-    }
-
-    private static <E extends Enum<E> & BaseCommonEnum> Map<String, Object> getEnumsMap(Class<E> clazz) {
-        Map<String, Object> resultMap = Maps.newHashMap();
-        EnumSet<E> all = EnumSet.allOf(clazz);
-        all.forEach(e -> resultMap.put(e.getTypeCode(), e.getTypeName()));
-        return resultMap;
-    }
-
-    /**
-     * 获取枚举的所有值，且key、value以"-"拼接
-     *
-     * @param clazz 枚举class
-     */
-    public static Map<String, Object> getEnumMap(Class clazz) {
-        return getEnumsMap(clazz);
     }
 
 
