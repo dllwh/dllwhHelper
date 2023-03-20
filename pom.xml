@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<!--声明项目描述符遵循哪一个POM模型版本。模型本身的版本很少改变，虽然如此，但它仍然是必不可少的，这是为了当Maven引入了新的特性或者其他模型变更的时候，确保稳定性。 -->
 	<modelVersion>4.0.0</modelVersion>
@@ -8,7 +7,7 @@
 
 	<!-- ====================================================================== 
 		基本设置 -->
-	<!--项目的全球唯一标识符，通常使用全限定的包名区分该项目和其他项目。并且构建时生成的路径也是由此生成， 如com.mycompany.app生成的相对路径为：/com/mycompany/app -->
+	<!--项目的全球唯一标识符，通常使用全限定的包名区分该项目和其他项目。并且构建时生成的路径也是由此生成， 如com.company.app生成的相对路径为：/com/company/app -->
 	<groupId>org.dllwh</groupId>
 	<!--构件的标识符，它和group ID一起唯一标识一个构件.在某个特定的group ID下,artifact ID也必须是唯一的。构件是项目产生的或使用的一个东西，Maven为项目产生的构件包括：JARs，源码，二进制发布和WARs等。 -->
 	<artifactId>dllwhHelper</artifactId>
@@ -86,12 +85,18 @@
 		<slf4j.version>1.6.1</slf4j.version>
 
 		<!-- 数据库 版本号 -->
-		<mysql.version>8.0.12</mysql.version>
+		<mysql.version>8.0.30</mysql.version>
 	</properties>
 
 	<!-- ======== <dependency></dependency>===================================================== 
 		该元素描述了项目相关的所有依赖,这些依赖组成了项目构建过程中的一个个环节,它们自动从项目定义的仓库中下载 -->
 	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+		</dependency>
+
 		<!-- 导入Mysql数据库驱动包 -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -104,7 +109,7 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.2</version>
+			<version>1.9.4</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-collections</groupId>
@@ -115,22 +120,23 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.7</version>
+			<version>3.12.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
-			<version>4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
+			<version>4.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.5.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -148,13 +154,13 @@
 		<dependency>
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
-			<version>1.6</version>
+			<version>1.7</version>
 		</dependency>
 		<!-- commons-io -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
+			<version>2.7</version>
 		</dependency>
 		<!-- 导入Apache (结束) -->
 
@@ -181,9 +187,24 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.22</version>
+			<version>1.18.20</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- 阿里巴巴fastjson，解析json视图 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>2.0.14</version>
+		</dependency>
+		
+		<!-- 引入 Joda-Time 依赖 -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.9.9</version>
+		</dependency>
+		
 	</dependencies>
 
 	<!-- ====================================================================== 
@@ -201,7 +222,8 @@
 		<module>dllwh-weixin-mp</module>
 		<module>dllwh-weixin-pay</module>
 		<module>dllwh-weixin-qy</module>
-	</modules>
+    <module>dllwh-monitor</module>
+  </modules>
 	<!-- ====================================================================== 
 		构建项目需要的信息 -->
 	<build>
@@ -229,7 +251,7 @@
 					<version>${maven-resources-plugin.version}</version>
 					<configuration>
 						<encoding>${file.encoding}</encoding>
-						<outputDirectory />
+						<outputDirectory/>
 					</configuration>
 				</plugin>
 			</plugins>
