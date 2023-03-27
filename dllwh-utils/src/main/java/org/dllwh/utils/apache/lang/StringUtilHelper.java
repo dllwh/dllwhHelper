@@ -479,7 +479,7 @@ public final class StringUtilHelper extends StringUtils {
 		return new StringWriter();
 	}
 
-	private static byte[] getBytes(final String content, final Charset charset) {
+	public static byte[] getBytes(final String content, final Charset charset) {
 		if (content == null) {
 			return null;
 		}
