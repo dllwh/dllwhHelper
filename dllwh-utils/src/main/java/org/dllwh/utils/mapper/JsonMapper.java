@@ -63,7 +63,7 @@ public class JsonMapper extends ObjectMapper {
 		this.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
 			@Override
 			public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider)
-					throws IOException, JsonProcessingException {
+					throws IOException {
 				jgen.writeString("");
 			}
 		});
